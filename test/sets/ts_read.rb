@@ -118,6 +118,27 @@ class TS_ReadArchive < Test::Unit::TestCase
     end
   end
 
+  def test_save_data
+    content_spec_idx = 0
+
+    Dir.mktmpdir do |dir|
+      Archive.read_open_memory(@archive_content) do |ar|
+        Dir.chdir(dir) do
+          ar.each_entry do |e|
+            if e.file?
+              _, _, _, expect_content = CONTENT_SPEC[content_spec_idx]
+              path = "_test_#{File.basename(e.pathname)}"
+              ar.save_data(path)
+              assert_equal expect_content, File.read(path, mode: "rb")
+            end
+
+            content_spec_idx += 1
+          end
+        end
+      end
+    end
+  end
+
   private
 
   def verify_content(ar)
