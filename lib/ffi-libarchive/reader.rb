@@ -116,8 +116,8 @@ module Archive
     end
 
     def save_data(file_name)
-      IO.sysopen(file_name, "wb") do |fd|
-        raise Error, @archive if C.archive_read_data_into_fd(archive, fd) != C::OK
+      File.open(file_name, "wb") do |fd|
+        raise Error, @archive if C.archive_read_data_into_fd(archive, fd.fileno) != C::OK
       end
     end
   end
